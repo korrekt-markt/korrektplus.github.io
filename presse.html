@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Über uns – KORREKT 2026</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      margin: 0;
+      font-family: "Montserrat", sans-serif;
+      background: #111;
+      color: #eee;
+      overflow-x: hidden;
+    }
+
+    /* HEADER */
+    header {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: linear-gradient(90deg, #333, #444);
+      padding: 0.8rem 2rem;
+      z-index: 1000;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+    .logo img { height: 44px; }
+    .search {
+      flex: 0 0 340px;
+      margin: 0 1.5rem;
+      position: relative;
+    }
+    .search input {
+      width: 100%;
+      padding: 0.7rem 1.2rem;
+      border-radius: 40px;
+      border: none;
+      background: #222;
+      color: #eee;
+      font-size: 1rem;
+      padding-left: 2.6rem;
+      box-shadow: inset 0 0 4px rgba(0,0,0,0.4);
+    }
+    .search::before {
+      content: "🔍";
+      position: absolute;
+      left: 0.9rem;
+      top: 0.55rem;
+      opacity: 0.7;
+      font-size: 1.1rem;
+    }
+    .icons {
+      display: flex;
+      align-items: center;
+      gap: 0.9rem;
+    }
+    .icons span {
+      color: #eee;
+      cursor: pointer;
+      transition: color 0.2s;
+      display: flex;
+      align-items: center;
+    }
+    .icons span:hover { color: #ff0a7a; }
+    .icons img {
+      height: 30px;
+      width: auto;
+      object-fit: contain;
+      background: transparent;
+      border: none;
+    }
+
+    /* MAIN CONTENT */
+    main {
+      max-width: 900px;
+      margin: 6rem auto 4rem;
+      padding: 2rem;
+      background: #1a1a1a;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    }
+
+    main h1 {
+      color: #ff0a7a;
+      font-size: 2.4rem;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+    main h2 {
+      color: #00a7a0;
+      font-size: 1.4rem;
+      margin-top: 2rem;
+    }
+    main p {
+      line-height: 1.7;
+      font-size: 1.05rem;
+      color: #ddd;
+      margin-bottom: 1.5rem;
+    }
+    blockquote {
+      border-left: 4px solid #ff0a7a;
+      padding-left: 1rem;
+      margin: 2rem 0;
+      color: #ccc;
+      font-style: italic;
+    }
+
+    /* FOOTER */
+    footer {
+      background: #111;
+      color: white;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 2rem;
+      padding: 3rem;
+    }
+    footer h3 { color: #ff0a7a; }
+    footer a {
+      color: #bbb;
+      text-decoration: none;
+      display: block;
+      margin: 0.3rem 0;
+    }
+    footer a:hover { color: #fff; }
+
+    .copyright {
+      background: #000;
+      color: #aaa;
+      text-align: center;
+      padding: 1rem;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo">
+        <img src="korrekt.png" alt="KORREKT Logo" />
+    </div>
+    <div class="search">
+      <input type="text" placeholder="Suche..." />
+    </div>
+    <div class="icons">
+      <span>👤</span>
+      <span>📍</span>
+      <span><img src="payback-logo.svg" alt="Payback Logo"></span>
+    </div>
+  </header>
+
+  <main>
+    <h1>Pressemitteilung – Eröffnung des neuen Stadtmarktes KORREKT.</h1>
+
+    <p><strong>Dessau-Roßlau, Januar 2026.</strong></p>
+
+    <p>Mit <strong>KORREKT.</strong> eröffnet in Dessau ein neuer Stadtmarkt, der das Einkaufen
+    bewusst einfacher, ruhiger und ehrlicher gestalten möchte. Kein Marketing-Overload,
+    keine Rabatt-Tricks – sondern ein Markt, der sich auf das konzentriert,
+    was wirklich zählt: gute Preise, gute Produkte und ein respektvoller Umgang miteinander.</p>
+
+    <p>Der Markt wird von einem jungen, engagierten Team geführt, das Handel neu denkt:
+    digital, nahbar und ohne unnötige Komplikationen. Dazu gehören moderne Lösungen wie
+    digitale Preisauszeichnung, ein klar strukturiertes Sortiment und
+    <strong>korrektPlus Scan&Go</strong> für schnelle Einkäufe mit bis zu sieben Artikeln.</p>
+
+    <h2>Warum KORREKT.?</h2>
+    <p>Wir glauben, dass Einkaufen nicht stressig sein muss.
+    Kein Gedränge, kein Preis-Showdown, kein „Sonderangebot des Tages“-Chaos.
+    Stattdessen: klare Preise, freundliche Atmosphäre und ehrlicher Service.</p>
+
+    <p>Unser Ziel ist nicht, größer zu sein als andere – sondern <em>besser vorbereitet</em>
+    auf das, was Menschen heute wirklich wollen: Ruhe, Transparenz und ein Markt,
+    der seine Kundschaft nicht unterschätzt.</p>
+
+    <blockquote>
+      „Einkaufen. Ohne Theater.“
+    </blockquote>
+
+    <h2>Standort & Zeitraum</h2>
+    <p>Der Markt in Dessau ist zunächst als Pilotprojekt geplant.
+    Die Ergebnisse aus den ersten Betriebsmonaten fließen direkt in die Weiterentwicklung ein.
+    Wenn das Konzept angenommen wird, folgen weitere Standorte.</p>
+
+    <p>Eröffnung: <strong>2. Januar 2026</strong><br>
+    Voraussichtlicher Pilotzeitraum: <strong>bis März 2026</strong></p>
+
+    <h2>Ein Markt, der zuhört</h2>
+    <p>KORREKT. startet mit einem einfachen Versprechen:
+    <br><strong>Wir nehmen Rückmeldungen ernst.</strong><br>
+    Kund*innen können jederzeit Wünsche, Kritik oder Ideen äußern.
+    Was sinnvoll ist, setzen wir um. Direkt. Ohne Bürokratie.</p>
+
+    <p>Mehr Informationen folgen mit der offiziellen Vorstellung von
+    korrektPlus und weiteren Services in den kommenden Wochen.</p>
+  </main>
+
+
+  <footer>
+    <div>
+      <h3>Service</h3>
+      <a href="#">Hilfe & FAQ</a>
+      <a href="#">Kontakt</a>
+      <a href="#">Rückgabe</a>
+    </div>
+    <div>
+      <h3>Unternehmen</h3>
+      <a href="#">Über uns</a>
+      <a href="#">Nachhaltigkeit</a>
+      <a href="#">Presse</a>
+    </div>
+    <div>
+      <h3>Karriere</h3>
+      <a href="#">Jobs</a>
+      <a href="#">Ausbildung</a>
+      <a href="#">Initiativbewerbung</a>
+    </div>
+    <div>
+      <h3>Folge uns</h3>
+      <a href="#">Instagram</a>
+      <a href="#">Facebook</a>
+      <a href="#">LinkedIn</a>
+    </div>
+  </footer>
+
+  <div class="copyright">© 2025 KORREKT Markt GmbH – neu gedacht, echt KORREKT.</div>
+
+</body>
+</html>
