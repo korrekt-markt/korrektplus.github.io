@@ -3,532 +3,285 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>KORREKT – echt. regional. voll korrekt.</title>
-  <link rel="icon" type="image/png" href="/favicon.png" />
-<link rel="apple-touch-icon" href="/favicon.png" />
-<meta name="theme-color" content="#111" />
+  <title>korrektPlus – Dein Vorteil bei KORREKT.</title>
+
+  <link rel="icon" href="/favicon.png" />
+  <meta name="theme-color" content="#111" />
 
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <style>
     body {
       margin: 0;
       font-family: "Montserrat", sans-serif;
       background: #111;
       color: #fff;
-      overflow-x: hidden;
     }
 
-    /* HEADER */
-    /* HEADER */
     header {
       position: fixed;
       top: 0;
       width: 100%;
-      box-sizing: border-box;      /* wichtig, damit padding mitgezählt wird */
       display: flex;
       align-items: center;
       justify-content: space-between;
       background: linear-gradient(90deg, #333, #444);
-      padding: 0.8rem 2rem 0.8rem 2rem; /* gleichmäßig */
-      padding-right: 2.6rem;            /* EXTRA-Rechts-Puffer gegen Abschneiden */
+      padding: 0.8rem 2rem;
       z-index: 1000;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-      overflow: visible;                /* nix abschneiden */
+      box-shadow: 0 2px 8px rgba(0,0,0,.3);
     }
 
     .logo img { height: 44px; }
 
-    .search {
-      flex: 0 0 340px;          /* 🔹 deutlich breiter */
-      margin: 0 1.5rem;
-      position: relative;
-    }
-
-    .search input {
-      width: 100%;
-      padding: 0.7rem 1.2rem;   /* 🔹 höher und luftiger */
-      border-radius: 40px;
-      border: none;
-      background: #222;
-      color: #eee;
-      font-size: 1rem;
-      padding-left: 2.6rem;     /* 🔹 mehr Platz für das Suchsymbol */
-      box-shadow: inset 0 0 4px rgba(0,0,0,0.4); /* optisch schöner */
-    }
-
-    .search::before {
-      content: "🔍";
-      position: absolute;
-      left: 0.9rem;
-      top: 0.55rem;             /* 🔹 Symbol mittig */
-      opacity: 0.7;
-      font-size: 1.1rem;
-    }
-
-
-    /* ICON-LEISTE rechts */
     .icons {
       display: flex;
+      gap: 1rem;
       align-items: center;
-      gap: 0.9rem;             /* etwas enger als 1.2rem */
-      padding-right: 0.4rem;   /* nur minimaler Rand, nix überlappt */     /* Mini-Puffer */
     }
+
     .icons span {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #eee;
       cursor: pointer;
-      transition: color 0.2s;
-      line-height: 1;             /* verhindert vertikales Abschneiden */
-    }
-    .icons span:hover { color: #ff0a7a; }
-
-    /* Payback-Logo sicher einpassen */
-    .icons img {
-      display: block;
-      height: 32px;
-      width: auto;
-      object-fit: contain;
-      background: transparent;    /* 🔥 sorgt für echte Transparenz */
-      border: none;
-      filter: drop-shadow(0 0 0 transparent); /* entfernt evtl. dunkle Ränder bei SVGs */
+      font-size: 1.2rem;
     }
 
-      .icons .payback {
-        background: transparent !important;
-        border: none;
-        padding-right: 0;
-      }
-
-
-    /* HERO SLIDER */
     .hero {
-      margin-top: 4.8rem;
-      position: relative;
+      margin-top: 5rem;
       height: 80vh;
+      position: relative;
       overflow: hidden;
     }
+
     .slide {
       position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
+      inset: 0;
       background-size: cover;
       background-position: center;
       opacity: 0;
-      transition: opacity 1s ease;
+      transition: opacity 1s;
     }
-    .slide.active {
-      opacity: 1;
-    }
+
+    .slide.active { opacity: 1; }
+
     .overlay {
       position: absolute;
       inset: 0;
-      background: rgba(0, 0, 0, 0.5);
-      pointer-events: none;
-
+      background: rgba(0,0,0,.55);
     }
-      .hero-text {
-        position: absolute;
-        top: 50%;
-        left: 10%;
-        transform: translateY(-50%);
-        color: white;
-        z-index: 2;
-      }
+
+    .hero-text {
+      position: absolute;
+      top: 50%;
+      left: 10%;
+      transform: translateY(-50%);
+      z-index: 2;
+    }
 
     .hero-text h1 {
       font-size: 3rem;
       color: #ff0a7a;
       margin: 0;
     }
+
     .hero-text p {
       font-size: 1.2rem;
-      margin-top: 0.5rem;
       max-width: 500px;
     }
-      .hero-buttons button {
-        background: linear-gradient(45deg, #ff0a7a, #00a7a0);
-        color: white;
-        border: none;
-        border-radius: 25px;
-        padding: 0.7rem 1.3rem;
-        margin-top: 1.5rem;
-        margin-right: 0.5rem;
-        font-size: 1rem;
-        cursor: pointer;
-        transition: transform 0.2s;
-      }
-      
-      .hero-buttons a {
-        background: linear-gradient(45deg, #ff0a7a, #00a7a0);
-        color: white;
-        border: none;
-        border-radius: 25px;
-        padding: 0.7rem 1.3rem;
-        margin-top: 1.5rem;
-        margin-right: 0.5rem;
-        font-size: 1rem;
-        cursor: pointer;
-        transition: transform 0.2s;
-      }
-      
-    .hero-buttons button:hover {
-      transform: scale(1.05);
-    }
-    .arrow {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      font-size: 2rem;
+
+    .hero-buttons a {
+      display: inline-block;
+      margin-top: 1.5rem;
+      margin-right: .6rem;
+      background: linear-gradient(45deg, #ff0a7a, #00a7a0);
+      padding: .7rem 1.3rem;
+      border-radius: 25px;
       color: #fff;
-      cursor: pointer;
-      z-index: 10;
-      user-select: none;
-      padding: 0.3rem 0.7rem;
-      background: rgba(0, 0, 0, 0.4);
-      border-radius: 50%;
-    }
-    .arrow.left {
-      left: 1rem;
-    }
-    .arrow.right {
-      right: 1rem;
+      text-decoration: none;
+      font-weight: 600;
     }
 
-    /* CATEGORIES */
-    .categories {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 1.5rem;
+    section {
       padding: 3rem;
-      background: #111;
-    }
-    .cat {
-      position: relative;
-      border-radius: 15px;
-      overflow: clip;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-      transition: transform 0.3s;
-    }
-    .cat:hover {
-      transform: translateY(-5px);
-    }
-    .cat img {
-      width: 100%;
-      height: 200px;
-      object-fit: cover;
-      filter: brightness(80%);
-      border-radius: 15px; /* gleich wie .cat */
-
-    }
-    .cat h3 {
-      position: absolute;
-      bottom: 10px;
-      left: 15px;
-      color: white;
-      font-size: 1.4rem;
     }
 
-    /* PRODUCTS */
-    .products {
-      padding: 3rem;
-      background: #1a1a1a;
-    }
-    .products h2 {
-      text-align: center;
+    h2 {
       color: #ff0a7a;
-      font-size: 2rem;
+      text-align: center;
+      margin-bottom: 2rem;
     }
-    .product-grid {
+
+    .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(220px,1fr));
       gap: 1.5rem;
-      margin-top: 2rem;
-    }
-    .product {
-      background: #333;
-      border-radius: 10px;
-      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
-      overflow: hidden;
-      text-align: center;
-      transition: transform 0.2s;
-    }
-    .product:hover {
-      transform: scale(1.03);
-    }
-    .product img {
-      width: 100%;
-      height: 180px;
-      background: #222;
-      object-fit: contain;     /* 🔹 Bild vollständig anzeigen */
-      padding: 0.5rem;
-    }
-    .product h4 {
-      margin: 0.8rem 0 0.3rem;
-    }
-    .price {
-      color: #00a7a0;
-      font-weight: 700;
-      font-size: 1.2rem;
-    }
-    .product button {
-      background: linear-gradient(45deg, #ff0a7a, #00a7a0);
-      border: none;
-      color: white;
-      padding: 0.5rem 1rem;
-      margin: 0.8rem 0 1.2rem;
-      border-radius: 20px;
-      cursor: pointer;
     }
 
-    /* FILIALFINDER */
-    .stores {
-      text-align: center;
-      padding: 3rem 2rem;
-      background: #222;
-    }
-    .stores h2 {
-      color: #ff0a7a;
-      font-size: 2rem;
-    }
-    .stores input {
-      padding: 0.6rem;
-      border-radius: 20px;
-      border: none;
-      width: 250px;
-      margin-right: 0.5rem;
-    }
-    .stores button {
-      background: linear-gradient(45deg, #ff0a7a, #00a7a0);
-      border: none;
-      color: white;
-      padding: 0.6rem 1rem;
-      border-radius: 20px;
-      cursor: pointer;
-    }
-
-    /* PAYBACK BOX */
-    .payback {
-      background: #111;
-      padding: 2rem 3rem;
-    }
-    .payback-box {
-      display: flex;
-      align-items: center;
+    .card {
       background: #333;
       border-radius: 15px;
       padding: 1.5rem;
-      gap: 1.5rem;
-      flex-wrap: wrap;
-      justify-content: center;
+      text-align: center;
+      transition: transform .2s;
     }
-    .payback-box img {
-      height: 50px;
-      width: auto;
-      object-fit: contain;
+
+    .card:hover {
+      transform: translateY(-5px);
     }
-    .payback-box h3 {
+
+    .card h3 {
       color: #00a7a0;
-      margin: 0;
     }
-    .payback-box button {
+
+    .login-box {
+      max-width: 400px;
+      margin: auto;
+      background: #222;
+      padding: 2rem;
+      border-radius: 15px;
+    }
+
+    .login-box input {
+      width: 100%;
+      padding: .7rem;
+      margin-bottom: 1rem;
+      border-radius: 20px;
+      border: none;
+    }
+
+    .login-box button {
+      width: 100%;
       background: linear-gradient(45deg, #ff0a7a, #00a7a0);
       border: none;
-      border-radius: 20px;
-      padding: 0.5rem 1rem;
-      color: white;
-      cursor: pointer;
-      margin-top: 0.5rem;
-    }
-
-    /* FOOTER */
-    footer {
-      background: #111;
-      color: white;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 2rem;
-      padding: 3rem;
-    }
-    footer h3 {
-      color: #ff0a7a;
-    }
-    footer a {
-      color: #bbb;
-      text-decoration: none;
-      display: block;
-      margin: 0.3rem 0;
-    }
-    footer a:hover {
       color: #fff;
+      padding: .7rem;
+      border-radius: 20px;
+      font-weight: 600;
+      cursor: pointer;
     }
 
-    .copyright {
+    footer {
       background: #000;
-      color: #aaa;
       text-align: center;
       padding: 1rem;
-      font-size: 0.9rem;
+      color: #aaa;
+      font-size: .9rem;
     }
   </style>
 </head>
+
 <body>
-    <header>
-      <div class="logo">
-        <img src="https://korrekt-markt.de/korrekt.png" alt="KORREKT Logo" />
-      </div>
 
-      <div class="search">
-        <input type="text" placeholder="Suche..." />
-      </div>
+<header>
+  <div class="logo">
+    <img src="https://korrekt-markt.de/korrekt.png">
+  </div>
+  <div class="icons">
+    <span onclick="scrollToSection('login')">👤</span>
+    <span onclick="scrollToSection('download')">📱</span>
+  </div>
+</header>
 
-      <div class="icons">
-        <span title="Konto">👤</span>
-        <span title="Filialfinder">📍</span>
-        <span title="korrektPlus">
-          <img src="https://korrekt-markt.de/korrektPlus-web_transparent.png" alt="korrektPlus Logo" />
-        </span>
-      </div>
-    </header>
-
-
-  <!-- HERO SLIDER -->
-  <section class="hero">
-    <div class="slide active" style="background-image:url('https://images.unsplash.com/photo-1618223652173-1e5e71f7a0c1?auto=format&fit=crop&w=1600&q=80');">
-      <div class="overlay"></div>
-      <div class="hero-text">
-        <h1>Echt. Regional. Voll KORREKT.</h1>
-        <p>KORREKT – Einkaufen. Ohne Theater.</p>
-        <div class="hero-buttons">
-          <button>🛍 Angebote ansehen</button>
-          <button onclick="window.location.href='https://appstore.apple.com/app/282619'">
-            📱 korrektPlus App
-          </button>
-
-        </div>
+<!-- HERO -->
+<section class="hero">
+  <div class="slide active" style="background-image:url('https://images.unsplash.com/photo-1556742031-c6961e8560b0');">
+    <div class="overlay"></div>
+    <div class="hero-text">
+      <h1>korrektPlus+</h1>
+      <p>Punkte sammeln. Vorteile sichern. Alles digital.</p>
+      <div class="hero-buttons">
+        <a href="#download">App laden</a>
+        <a href="#vorteile">Vorteile</a>
       </div>
     </div>
-    <div class="slide" style="background-image:url('https://images.unsplash.com/photo-1600185365483-26d7a0a9b122?auto=format&fit=crop&w=1600&q=80');">
-      <div class="overlay"></div>
-      <div class="hero-text">
-        <h1>KORREKT. oder so</h1>
-        <p>Lokal & digital – dein Markt von morgen. Der erste KORREKT. Markt eröffnet für 2 Monate ab dem 2. Januar 2026 in Dessau-Roßlau!</p>
-        <div class="hero-buttons">
-          <button onclick="window.location.href='/presse/korrekt-projekt'">
-            Zur Pressemitteilung
-          </button>
+  </div>
+</section>
 
-        </div>
-      </div>
+<!-- VORTEILE -->
+<section id="vorteile">
+  <h2>Deine Vorteile</h2>
+  <div class="grid">
+    <div class="card"><h3>Punkte sammeln</h3><p>Bei jedem Einkauf automatisch.</p></div>
+    <div class="card"><h3>Coupons</h3><p>Exklusive Rabatte nur für dich.</p></div>
+    <div class="card"><h3>Digitale Belege</h3><p>Alles in der App gespeichert.</p></div>
+    <div class="card"><h3>Personalisierung</h3><p>Angebote, die zu dir passen.</p></div>
+  </div>
+</section>
+
+<!-- LOGIN -->
+<section id="login">
+  <h2>korrektPlus Konto</h2>
+  <div class="login-box">
+    <input id="email" type="email" placeholder="E-Mail">
+    <input id="password" type="password" placeholder="Passwort">
+    <button onclick="login()">Einloggen</button>
+  </div>
+</section>
+
+<!-- DOWNLOAD -->
+<section id="download">
+  <h2>korrektPlus App</h2>
+  <div class="grid">
+    <div class="card">
+      <h3>Jetzt downloaden</h3>
+      <p>iOS & Android</p>
+      <button onclick="openAppStore()">Zum App Store</button>
     </div>
-      <div class="slide" style="background-image:url('https://images.unsplash.com/photo-1600185365483-26d7a0a9b122?auto=format&fit=crop&w=1600&q=80');">
-        <div class="overlay"></div>
-        <div class="hero-text">
-          <h1><i>KORREKT</i>. aber mit einem +</h1>
-          <p>Kundenbindung Next Level! korrektPlus die App die deinen Einkauf erleichtert wurde vorgestellt.</p>
-          <div class="hero-buttons">
-            <button onclick="window.location.href='/presse/vorstellung-korrektplus'">
-              Zur Pressemitteilung
-            </button>
+  </div>
+</section>
 
-          </div>
-        </div>
-    </div>
+<footer>
+  © 2025 KORREKT. – korrektPlus
+</footer>
 
-    <div class="arrow left" onclick="prevSlide()">❮</div>
-    <div class="arrow right" onclick="nextSlide()">❯</div>
-  </section>
+<script>
+  /* =============================
+     SUPABASE SETUP
+  ============================= */
+  const supabase = supabase.createClient(
+    "https://DEINPROJEKT.supabase.co",
+    "PUBLIC_ANON_KEY"
+  );
 
-  <!-- CATEGORIES -->
-  <section class="categories">
-    <div class="cat"><img src="https://www.ble.de/SharedDocs/Bilder/DE/Ernaehrung-Lebensmittel/Vermarktungsnormen/ObstGemuese.jpg?__blob=normal&v=1" alt=""><h3>Lebensmittel</h3></div>
-    <div class="cat"><img src="https://technikkram.net/wp-content/uploads/2014/09/img9.jpg" alt=""><h3>Technik</h3></div>
-    <div class="cat"><img src="https://beautyandblonde.de/wp-content/uploads/2018/04/RealTechniques1.jpg" alt=""><h3>Drogerie</h3></div>
-    <div class="cat"><img src="https://lebensmittelpraxis.de/images/altebilder/5688_19222.jpg" alt=""><h3>Haushalt</h3></div>
-    <div class="cat"><img src="https://www.gefako.de/file/402832947b2f550e017b3099785e001c.de.0/lemonade-drink%201.png?derivate=usage%3Dwebp%7Cposter%2Cwidth~1000" alt=""><h3>Getränke</h3></div>
-    <div class="cat"><img src="https://www.tierbedarf-onlineshops.de/images/tiere.jpg" alt=""><h3>Tierbedarf</h3></div>
-  </section>
+  /* =============================
+     FUNKTIONEN
+  ============================= */
 
-  <!-- PRODUCTS -->
-  <section class="products">
-    <h2>Unsere Highlights</h2>
-    <div class="product-grid">
-      <div class="product"><img src="tip-jog.png"><h4>Tip Joghurt Mild</h4><p class="price">0.99 €</p></div>
-      <div class="product"><img src="coke.png"><h4>Coca-Cola Kasten 12x1l</h4><p class="price">12.99 € zzgl. Pfand</p></div>
-      <div class="product"><img src="phi-kva.png"><h4>Philips EP5447/90 Serie 5400</h4><p class="price">449.99 €</p></div>
-      <div class="product"><img src="pri-sc185.png"><h4>Pringles vers. Sorten</h4><p class="price">1.79 €</p></div>
-    </div>
-  </section>
+  function scrollToSection(id) {
+    document.getElementById(id).scrollIntoView({ behavior: "smooth" });
+  }
 
-  <!-- FILIALFINDER -->
-  <section class="stores">
-    <h2>📍 Filialfinder</h2>
-    <p>Finde deinen KORREKT-Markt in deiner Nähe:</p>
-    <input type="text" placeholder="PLZ oder Ort eingeben" />
-    <button>Suchen</button>
-  </section>
+  function openAppStore() {
+    window.location.href = "https://appstore.apple.com/app/282619";
+  }
 
-  <!-- PAYBACK BOX -->
-  <section class="payback">
-    <div class="payback-box">
-      <img src="https://korrekt-markt.de/korrektPlus-web_transparent.png" alt="kp Logo" />
-      <div>
-        <h3>Bei KORREKT. Plus Punkte sammeln!</h3>
-        <p>Jetzt mit jedem Einkauf Punkte sichern und exklusive Prämien entdecken.</p>
-        <button>Mehr erfahren</button>
-      </div>
-    </div>
-  </section>
+  async function login() {
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
 
-  <!-- FOOTER -->
-  <footer>
-    <div>
-      <h3>Service</h3>
-      <a href="#">Hilfe & FAQ</a>
-      <a href="#">Kontakt</a>
-      <a href="#">Rückgabe</a>
-    </div>
-    <div>
-      <h3>Unternehmen</h3>
-      <a href="#">Über uns</a>
-      <a href="/impressum">Impressum</a>
-      <a href="#">Presse</a>
-    </div>
-    <div>
-      <h3>Karriere</h3>
-      <a href="#">Jobs</a>
-      <a href="#">Ausbildung</a>
-      <a href="#">Initiativbewerbung</a>
-    </div>
-    <div>
-      <h3>Folge uns</h3>
-      <a href="#">Instagram</a>
-      <a href="#">Facebook</a>
-      <a href="#">LinkedIn</a>
-    </div>
-  </footer>
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password
+    });
 
-  <div class="copyright">© 2025 KORREKT Markt – neu gedacht, echt KORREKT.</div>
-
-  <script>
-    let currentSlide = 0;
-    const slides = document.querySelectorAll(".slide");
-    function showSlide(n) {
-      slides.forEach((slide, i) => {
-        slide.classList.toggle("active", i === n);
-      });
+    if (error) {
+      alert("Login fehlgeschlagen");
+    } else {
+      alert("Willkommen bei korrektPlus!");
     }
-    function nextSlide() {
-      currentSlide = (currentSlide + 1) % slides.length;
-      showSlide(currentSlide);
-    }
-    function prevSlide() {
-      currentSlide = (currentSlide - 1 + slides.length) % slides.length;
-      showSlide(currentSlide);
-    }
-  </script>
+  }
+
+  /* =============================
+     SLIDER
+  ============================= */
+  let currentSlide = 0;
+  const slides = document.querySelectorAll(".slide");
+
+  setInterval(() => {
+    slides[currentSlide].classList.remove("active");
+    currentSlide = (currentSlide + 1) % slides.length;
+    slides[currentSlide].classList.add("active");
+  }, 8000);
+</script>
+
 </body>
 </html>
