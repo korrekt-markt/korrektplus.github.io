@@ -149,9 +149,6 @@ const supabaseClient = supabase.createClient(
 
 let profileId = null;
 
-/* =============================
-   AUTH GUARD + INIT
-============================= */
 (async () => {
   const { data: sessionData } = await supabaseClient.auth.getSession();
 
@@ -162,16 +159,16 @@ let profileId = null;
 
   const user = sessionData.session.user;
 
-  // 🔗 Profil über korrektplus_id (hier: email)
+  // ✅ PROFIL ÜBER auth_user_id FINDEN
   const { data: profile, error } = await supabaseClient
     .from("profiles")
     .select("*")
-    .eq("korrektplus_id", user.email)
+    .eq("auth_user_id", user.id)
     .single();
 
   if (error || !profile) {
     console.error("Profil nicht gefunden", error);
-    alert("Dein korrektPlus Profil wurde nicht gefunden.");
+    alert("Dein korrektPlus Profil wurde noch nicht verknüpft.");
     return;
   }
 
@@ -180,6 +177,7 @@ let profileId = null;
   renderProfile(profile);
   loadCoupons();
 })();
+
 
 /* =============================
    PROFIL RENDER
