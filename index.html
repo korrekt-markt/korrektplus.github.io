@@ -264,8 +264,8 @@
      SUPABASE SETUP
   ============================= */
   const supabase = supabase.createClient(
-    "https://DEINPROJEKT.supabase.co",
-    "PUBLIC_ANON_KEY"
+    "https://laeolvvznxstwmydqklp.supabase.co",
+    "sb_publishable_CgwYa1tnn9djtayOCGzPGg_M_92vy4O"
   );
 
   /* =============================
@@ -280,21 +280,25 @@
     window.location.href = "https://appstore.apple.com/app/282619";
   }
 
-  async function login() {
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
+async function login() {
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password
-    });
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password
+  });
 
-    if (error) {
-      alert("Login fehlgeschlagen");
-    } else {
-      alert("Willkommen bei korrektPlus!");
-    }
+  if (error) {
+    alert("Login fehlgeschlagen");
+    console.error(error);
+    return;
   }
+
+  // ✅ ERFOLGREICH → Weiterleitung
+  window.location.href = "/dashboard";
+}
+
 
   /* =============================
      SLIDER
