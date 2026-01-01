@@ -239,7 +239,7 @@
   <div class="login-box">
     <input id="email" type="email" placeholder="E-Mail">
     <input id="password" type="password" placeholder="Passwort">
-    <button onclick="login()">Einloggen</button>
+    <button onclick="handleLogin()">Einloggen</button>
   </div>
 </section>
 
@@ -280,7 +280,7 @@
     window.location.href = "https://appstore.apple.com/app/282619";
   }
 
-async function login() {
+async function handleLogin() {
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
 
