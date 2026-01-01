@@ -263,7 +263,7 @@
   /* =============================
      SUPABASE SETUP
   ============================= */
-  const supabase = supabase.createClient(
+  const supabaseClient = window.supabase.createClient(
     "https://laeolvvznxstwmydqklp.supabase.co",
     "sb_publishable_CgwYa1tnn9djtayOCGzPGg_M_92vy4O"
   );
@@ -280,25 +280,25 @@
     window.location.href = "https://appstore.apple.com/app/282619";
   }
 
-async function handleLogin() {
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
+  async function handleLogin() {
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
 
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email,
-    password
-  });
+    const { error } =
+      await supabaseClient.auth.signInWithPassword({
+        email,
+        password
+      });
 
-  if (error) {
-    alert("Login fehlgeschlagen");
-    console.error(error);
-    return;
+    if (error) {
+      alert("Login fehlgeschlagen");
+      console.error(error);
+      return;
+    }
+
+    // ✅ ERFOLGREICH → Weiterleitung
+    window.location.href = "/dashboard";
   }
-
-  // ✅ ERFOLGREICH → Weiterleitung
-  window.location.href = "/dashboard";
-}
-
 
   /* =============================
      SLIDER
@@ -312,6 +312,7 @@ async function handleLogin() {
     slides[currentSlide].classList.add("active");
   }, 8000);
 </script>
+
 
 </body>
 </html>
