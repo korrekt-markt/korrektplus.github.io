@@ -112,7 +112,7 @@
   <!-- PUNKTE -->
   <div class="card">
     <h2>Deine Punkte</h2>
-    <div class="big" id="punkte">–</div>
+    <div class="big" id="punkte">0/div>
     <div class="muted">Gesammelte korrektPlus Punkte</div>
   </div>
 
@@ -183,8 +183,8 @@ let profileId = null;
    PROFIL RENDER
 ============================= */
 function renderProfile(profile) {
-  document.getElementById("punkte").textContent =
-    profile.punkte + " Punkte";
+animatePoints(profile.punkte);
+
 
   document.getElementById("name").textContent =
     profile.name || "–";
@@ -228,6 +228,34 @@ async function loadCoupons() {
     list.appendChild(div);
   });
 }
+
+  function animatePoints(targetValue, duration = 1200) {
+  const element = document.getElementById("punkte");
+  if (!element) return;
+
+  const startValue = 0;
+  const startTime = performance.now();
+
+  function update(currentTime) {
+    const elapsed = currentTime - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+
+    // easeOutCubic (fühlt sich hochwertig an)
+    const easedProgress = 1 - Math.pow(1 - progress, 3);
+    const currentValue = Math.floor(
+      startValue + (targetValue - startValue) * easedProgress
+    );
+
+    element.textContent = currentValue.toLocaleString("de-DE") + " Punkte";
+
+    if (progress < 1) {
+      requestAnimationFrame(update);
+    }
+  }
+
+  requestAnimationFrame(update);
+}
+
 
 /* =============================
    LOGOUT
