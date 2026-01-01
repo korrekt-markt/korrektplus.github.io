@@ -175,10 +175,18 @@
   <div class="logo">
     <img src="https://korrekt-markt.de/korrekt.png">
   </div>
-  <div class="icons">
-    <span onclick="scrollToSection('login')">👤</span>
-    <span onclick="scrollToSection('download')">📱</span>
-  </div>
+<div class="icons">
+  <span id="loginIcon" onclick="scrollToSection('login')">👤</span>
+
+  <a id="dashboardLink"
+     href="/dashboard"
+     style="display:none; text-decoration:none; color:#fff; font-weight:600;">
+    Zum Dashboard →
+  </a>
+
+  <span onclick="scrollToSection('download')">📱</span>
+</div>
+
 </header>
 
 <!-- HERO -->
@@ -299,6 +307,30 @@
     // ✅ ERFOLGREICH → Weiterleitung
     window.location.href = "/dashboard";
   }
+
+  /* =============================
+     Nach Session suchen
+     ========================== */
+  async function updateHeaderAuthState() {
+  const { data } = await supabaseClient.auth.getSession();
+
+  const loginIcon = document.getElementById("loginIcon");
+  const dashboardLink = document.getElementById("dashboardLink");
+
+  if (data.session) {
+    // ✅ Eingeloggt
+    if (loginIcon) loginIcon.style.display = "none";
+    if (dashboardLink) dashboardLink.style.display = "inline";
+  } else {
+    // ❌ Nicht eingeloggt
+    if (loginIcon) loginIcon.style.display = "inline";
+    if (dashboardLink) dashboardLink.style.display = "none";
+  }
+}
+
+// Beim Laden ausführen
+updateHeaderAuthState();
+
 
   /* =============================
      SLIDER
