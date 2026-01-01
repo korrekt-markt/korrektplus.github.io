@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>korrektPlus Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#111">
+
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: "Montserrat", sans-serif;
+      background: #111;
+      color: #fff;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      background: linear-gradient(90deg, #333, #444);
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 1.4rem;
+      color: #ff0a7a;
+    }
+
+    header button {
+      background: none;
+      border: none;
+      color: #fff;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+
+    main {
+      padding: 2rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .card {
+      background: #222;
+      border-radius: 16px;
+      padding: 1.5rem;
+    }
+
+    .card h2 {
+      margin-top: 0;
+      color: #00a7a0;
+      font-size: 1.2rem;
+    }
+
+    .big {
+      font-size: 2.6rem;
+      font-weight: 800;
+      color: #ff0a7a;
+    }
+
+    .muted {
+      color: #aaa;
+      font-size: .9rem;
+    }
+
+    .coupon {
+      background: #333;
+      border-radius: 12px;
+      padding: 1rem;
+      margin-bottom: .8rem;
+    }
+
+    .coupon small {
+      color: #ccc;
+    }
+
+    .active {
+      color: #00ff9c;
+      font-weight: 600;
+    }
+
+    .inactive {
+      color: #aaa;
+    }
+
+    .barcode {
+      font-family: monospace;
+      background: #000;
+      padding: .5rem;
+      border-radius: 6px;
+      margin-top: .5rem;
+      display: inline-block;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h1>korrektPlus Dashboard</h1>
+  <button onclick="logout()">Logout</button>
+</header>
+
+<main>
+
+  <!-- PUNKTE -->
+  <div class="card">
+    <h2>Deine Punkte</h2>
+    <div class="big" id="punkte">–</div>
+    <div class="muted">Gesammelte korrektPlus Punkte</div>
+  </div>
+
+  <!-- PROFIL -->
+  <div class="card">
+    <h2>Dein Profil</h2>
+    <div><strong>Name:</strong> <span id="name">–</span></div>
+    <div style="margin-top:.5rem;">
+      <strong>korrektPlus ID:</strong>
+      <div class="barcode" id="kpId">–</div>
+    </div>
+    <div style="margin-top:.5rem;">
+      <strong>Barcode ID:</strong>
+      <div class="barcode" id="barcodeId">–</div>
+    </div>
+  </div>
+
+  <!-- COUPONS -->
+  <div class="card">
+    <h2>Deine Coupons</h2>
+    <div id="couponList" class="muted">Lade Coupons…</div>
+  </div>
+
+</main>
+
+<script>
+/* =============================
+   SUPABASE
+============================= */
+const supabaseClient = supabase.createClient(
+  "https://laeolvvznxstwmydqklp.supabase.co",
+  "sb_publishable_CgwYa1tnn9djtayOCGzPGg_M_92vy4O"
+);
+
+let profileId = null;
+
+/* =============================
+   AUTH GUARD + INIT
+============================= */
+(async () => {
+  const { data: sessionData } = await supabaseClient.auth.getSession();
+
+  if (!sessionData.session) {
+    window.location.href = "/korrektplus";
+    return;
+  }
+
+  const user = sessionData.session.user;
+
+  // 🔗 Profil über korrektplus_id (hier: email)
+  const { data: profile, error } = await supabaseClient
+    .from("profiles")
+    .select("*")
+    .eq("korrektplus_id", user.email)
+    .single();
+
+  if (error || !profile) {
+    console.error("Profil nicht gefunden", error);
+    alert("Dein korrektPlus Profil wurde nicht gefunden.");
+    return;
+  }
+
+  profileId = profile.id;
+
+  renderProfile(profile);
+  loadCoupons();
+})();
+
+/* =============================
+   PROFIL RENDER
+============================= */
+function renderProfile(profile) {
+  document.getElementById("punkte").textContent =
+    profile.punkte + " Punkte";
+
+  document.getElementById("name").textContent =
+    profile.name || "–";
+
+  document.getElementById("kpId").textContent =
+    profile.korrektplus_id || "–";
+
+  document.getElementById("barcodeId").textContent =
+    profile.barcode_id || "–";
+}
+
+/* =============================
+   COUPONS
+============================= */
+async function loadCoupons() {
+  const { data: coupons, error } = await supabaseClient
+    .from("coupons")
+    .select("*")
+    .order("updated_at", { ascending: false });
+
+  const list = document.getElementById("couponList");
+  list.innerHTML = "";
+
+  if (error || !coupons || coupons.length === 0) {
+    list.textContent = "Aktuell keine Coupons verfügbar.";
+    return;
+  }
+
+  coupons.forEach(c => {
+    const div = document.createElement("div");
+    div.className = "coupon";
+    div.innerHTML = `
+      <strong>${c.title}</strong><br>
+      <small>${c.description || ""}</small><br>
+      <small>${c.discountText || ""}</small><br>
+      <small>${c.daysLeft ?? "–"} Tage gültig</small><br>
+      <span class="${c.activated ? "active" : "inactive"}">
+        ${c.activated ? "✅ Aktiviert" : "⬜ Nicht aktiviert"}
+      </span>
+    `;
+    list.appendChild(div);
+  });
+}
+
+/* =============================
+   LOGOUT
+============================= */
+async function logout() {
+  await supabaseClient.auth.signOut();
+  window.location.href = "/korrektplus";
+}
+</script>
+
+</body>
+</html>
