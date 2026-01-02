@@ -47,9 +47,7 @@
     }
 
     @media (max-width: 700px) {
-      main {
-        grid-template-columns: 1fr;
-      }
+      main { grid-template-columns: 1fr; }
     }
 
     .card {
@@ -89,15 +87,6 @@
       margin-bottom: .8rem;
     }
 
-    .active {
-      color: #00ff9c;
-      font-weight: 600;
-    }
-
-    .inactive {
-      color: #aaa;
-    }
-
     .barcode {
       font-family: monospace;
       background: #000;
@@ -106,6 +95,16 @@
       margin-top: .4rem;
       display: inline-block;
     }
+
+    .receipt {
+      background: #333;
+      border-radius: 12px;
+      padding: .8rem;
+      margin-bottom: .6rem;
+      font-size: .9rem;
+    }
+
+    .receipt small { color: #bbb; }
 
     button.primary {
       background: #ff0a7a;
@@ -158,32 +157,16 @@
   <!-- DIGITALE BONS -->
   <div class="card">
     <h2>Digitale Bons</h2>
-    <div class="muted">
-      Deine Einkäufe werden automatisch digital gespeichert.
-    </div>
-
-    <div style="margin-top:1rem">
-      <button class="primary">
-        Meine Bons anzeigen
-      </button>
-    </div>
+    <div id="receiptList" class="muted">Lade Bons…</div>
   </div>
 
   <!-- PREIS-ALARME -->
   <div class="card">
     <h2>Preis-Alarme</h2>
-    <div class="muted">
-      Lass dich informieren, wenn Produkte günstiger werden.
-    </div>
-
-    <div style="margin-top:1rem">
-      <div class="coupon">
-        🛎️ Noch keine Preis-Alarme eingerichtet
-      </div>
-    </div>
+    <div class="muted">Noch keine Preis-Alarme eingerichtet.</div>
   </div>
 
-  <!-- COUPONS (BLEIBT WIE ES IST) -->
+  <!-- COUPONS (UNVERÄNDERT) -->
   <div class="card">
     <h2>Deine Coupons</h2>
     <div id="couponList" class="muted">Lade Coupons…</div>
@@ -200,6 +183,11 @@ const supabaseClient = supabase.createClient(
   "sb_publishable_CgwYa1tnn9djtayOCGzPGg_M_92vy4O"
 );
 
+let currentUserId = null;
+
+/* =============================
+   INIT
+============================= */
 (async () => {
   const { data: sessionData } = await supabaseClient.auth.getSession();
 
@@ -209,19 +197,21 @@ const supabaseClient = supabase.createClient(
   }
 
   const user = sessionData.session.user;
+  currentUserId = user.id;
 
-  const { data: profile, error } = await supabaseClient
+  const { data: profile } = await supabaseClient
     .from("profiles")
     .select("*")
     .eq("auth_user_id", user.id)
     .single();
 
-  if (error || !profile) {
+  if (!profile) {
     alert("Dein korrektPlus Profil wurde noch nicht verknüpft.");
     return;
   }
 
   renderProfile(profile);
+  loadReceipts();
   loadCoupons();
 })();
 
@@ -230,14 +220,44 @@ const supabaseClient = supabase.createClient(
 ============================= */
 function renderProfile(profile) {
   animatePoints(profile.punkte || 0);
-
   document.getElementById("name").textContent = profile.name || "–";
   document.getElementById("kpId").textContent = profile.korrektplus_id || "–";
   document.getElementById("barcodeId").textContent = profile.barcode_id || "–";
 }
 
 /* =============================
-   COUPONS
+   DIGITALE BONS
+============================= */
+async function loadReceipts() {
+  const list = document.getElementById("receiptList");
+  list.innerHTML = "";
+
+  const { data: receipts, error } = await supabaseClient
+    .from("receipts")
+    .select("id, receipt_number, market, total_cents, created_at")
+    .eq("auth_user_id", currentUserId)
+    .order("created_at", { ascending: false });
+
+  if (error || !receipts || receipts.length === 0) {
+    list.textContent = "Noch keine digitalen Bons vorhanden.";
+    return;
+  }
+
+  receipts.forEach(r => {
+    const div = document.createElement("div");
+    div.className = "receipt";
+    div.innerHTML = `
+      <strong>${r.market}</strong><br>
+      Bon-Nr: ${r.receipt_number}<br>
+      Betrag: ${(r.total_cents / 100).toFixed(2)} €<br>
+      <small>${new Date(r.created_at).toLocaleString("de-DE")}</small>
+    `;
+    list.appendChild(div);
+  });
+}
+
+/* =============================
+   COUPONS (BLEIBT)
 ============================= */
 async function loadCoupons() {
   const { data: coupons, error } = await supabaseClient
@@ -258,31 +278,26 @@ async function loadCoupons() {
     div.className = "coupon";
     div.innerHTML = `
       <strong>${c.title}</strong><br>
-      <small>${c.description || ""}</small><br>
-      <span class="${c.activated ? "active" : "inactive"}">
-        ${c.activated ? "✅ Aktiviert" : "⬜ Nicht aktiviert"}
-      </span>
+      <small>${c.description || ""}</small>
     `;
     list.appendChild(div);
   });
 }
 
 /* =============================
-   ANIMATION
+   PUNKTE ANIMATION
 ============================= */
 function animatePoints(target, duration = 1200) {
   const el = document.getElementById("punkte");
   const start = performance.now();
 
   function step(now) {
-    const progress = Math.min((now - start) / duration, 1);
-    const eased = 1 - Math.pow(1 - progress, 3);
+    const p = Math.min((now - start) / duration, 1);
     el.textContent =
-      Math.floor(target * eased).toLocaleString("de-DE") + " Punkte";
-
-    if (progress < 1) requestAnimationFrame(step);
+      Math.floor(target * (1 - Math.pow(1 - p, 3))).toLocaleString("de-DE")
+      + " Punkte";
+    if (p < 1) requestAnimationFrame(step);
   }
-
   requestAnimationFrame(step);
 }
 
