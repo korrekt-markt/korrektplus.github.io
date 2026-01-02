@@ -155,10 +155,12 @@
   </div>
 
   <!-- DIGITALE BONS -->
-  <div class="card">
-    <h2>Digitale Bons</h2>
-    <div id="receiptList" class="muted">Lade Bons…</div>
+<div class="card">
+  <h2>Digitale Bons</h2>
+  <div id="receiptList" class="muted">
+    Lade Bons…
   </div>
+</div>
 
   <!-- PREIS-ALARME -->
   <div class="card">
@@ -211,7 +213,7 @@ let currentUserId = null;
   }
 
   renderProfile(profile);
-  loadReceipts();
+loadReceipts(profile.auth_user_id); // 👈 HIER
   loadCoupons();
 })();
 
@@ -228,14 +230,14 @@ function renderProfile(profile) {
 /* =============================
    DIGITALE BONS
 ============================= */
-async function loadReceipts() {
+async function loadReceipts(authUserId) {
   const list = document.getElementById("receiptList");
   list.innerHTML = "";
 
   const { data: receipts, error } = await supabaseClient
     .from("receipts")
-    .select("id, receipt_number, market, total_cents, created_at")
-    .eq("auth_user_id", currentUserId)
+    .select("id, receipt_number, created_at, pdf_path")
+    .eq("auth_user_id", authUserId)
     .order("created_at", { ascending: false });
 
   if (error || !receipts || receipts.length === 0) {
@@ -243,19 +245,41 @@ async function loadReceipts() {
     return;
   }
 
-  receipts.forEach(r => {
+  for (const r of receipts) {
+    if (!r.pdf_path) continue;
+
+    const url = await getSignedReceiptURL(r.pdf_path);
+
     const div = document.createElement("div");
-    div.className = "receipt";
+    div.className = "coupon"; // gleiche Optik wie Coupons
+    div.style.cursor = "pointer";
+
+    const date = new Date(r.created_at).toLocaleDateString("de-DE");
+
     div.innerHTML = `
-      <strong>${r.market}</strong><br>
-      Bon-Nr: ${r.receipt_number}<br>
-      Betrag: ${(r.total_cents / 100).toFixed(2)} €<br>
-      <small>${new Date(r.created_at).toLocaleString("de-DE")}</small>
+      <strong>Bon ${r.receipt_number}</strong><br>
+      <small>${date}</small><br>
+      <small>📄 PDF öffnen</small>
     `;
+
+    div.onclick = () => window.open(url, "_blank");
     list.appendChild(div);
-  });
+  }
 }
 
+  async function getSignedReceiptURL(path) {
+  const { data, error } = await supabaseClient
+    .storage
+    .from("receipts")
+    .createSignedUrl(path, 60 * 10); // 10 Minuten gültig
+
+  if (error) {
+    console.error("Signed URL Fehler:", error);
+    return "#";
+  }
+
+  return data.signedUrl;
+}
 /* =============================
    COUPONS (BLEIBT)
 ============================= */
