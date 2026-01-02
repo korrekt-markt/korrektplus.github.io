@@ -132,7 +132,10 @@
     <div>
       <h2>Deine Punkte</h2>
       <div class="big" id="punkte">0</div>
-      <div class="muted">Gesammelte korrektPlus Punkte</div>
+      <div class="muted">Gesammelte korrektPlus Punkte</div><br>
+      <div class="muted">Das entspricht</div><div class="muted" id="punkte"> 0</div><div class="big" id="punkte">€</div>
+
+
     </div>
   </div>
 
@@ -319,7 +322,7 @@ function animatePoints(target, duration = 3000) {
     const p = Math.min((now - start) / duration, 1);
     el.textContent =
       Math.floor(target * (1 - Math.pow(1 - p, 3))).toLocaleString("de-DE")
-      + " Punkte";
+      + "";
     if (p < 1) requestAnimationFrame(step);
   }
   requestAnimationFrame(step);
