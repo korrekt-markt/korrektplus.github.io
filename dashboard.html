@@ -42,14 +42,27 @@
     main {
       padding: 2rem;
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      grid-template-columns: repeat(2, minmax(260px, 1fr));
       gap: 1.5rem;
+    }
+
+    @media (max-width: 700px) {
+      main {
+        grid-template-columns: 1fr;
+      }
     }
 
     .card {
       background: #222;
       border-radius: 16px;
       padding: 1.5rem;
+    }
+
+    .card.fixed {
+      height: 220px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
     }
 
     .card h2 {
@@ -76,10 +89,6 @@
       margin-bottom: .8rem;
     }
 
-    .coupon small {
-      color: #ccc;
-    }
-
     .active {
       color: #00ff9c;
       font-weight: 600;
@@ -94,8 +103,18 @@
       background: #000;
       padding: .5rem;
       border-radius: 6px;
-      margin-top: .5rem;
+      margin-top: .4rem;
       display: inline-block;
+    }
+
+    button.primary {
+      background: #ff0a7a;
+      border: none;
+      padding: .6rem 1rem;
+      border-radius: 10px;
+      color: #fff;
+      cursor: pointer;
+      font-weight: 600;
     }
   </style>
 </head>
@@ -110,27 +129,61 @@
 <main>
 
   <!-- PUNKTE -->
-  <div class="card">
-    <h2>Deine Punkte</h2>
-    <div class="big" id="punkte">0</div>
-    <div class="muted">Gesammelte korrektPlus Punkte</div>
+  <div class="card fixed">
+    <div>
+      <h2>Deine Punkte</h2>
+      <div class="big" id="punkte">0</div>
+      <div class="muted">Gesammelte korrektPlus Punkte</div>
+    </div>
   </div>
 
   <!-- PROFIL -->
-  <div class="card">
-    <h2>Dein Profil</h2>
-    <div><strong>Name:</strong> <span id="name">–</span></div>
-    <div style="margin-top:.5rem;">
-      <strong>korrektPlus ID:</strong>
-      <div class="barcode" id="kpId">–</div>
-    </div>
-    <div style="margin-top:.5rem;">
-      <strong>Barcode ID:</strong>
-      <div class="barcode" id="barcodeId">–</div>
+  <div class="card fixed">
+    <div>
+      <h2>Dein Profil</h2>
+      <div><strong>Name:</strong> <span id="name">–</span></div>
+
+      <div style="margin-top:.6rem;">
+        <strong>korrektPlus ID:</strong>
+        <div class="barcode" id="kpId">–</div>
+      </div>
+
+      <div style="margin-top:.4rem;">
+        <strong>Barcode ID:</strong>
+        <div class="barcode" id="barcodeId">–</div>
+      </div>
     </div>
   </div>
 
-  <!-- COUPONS -->
+  <!-- DIGITALE BONS -->
+  <div class="card">
+    <h2>Digitale Bons</h2>
+    <div class="muted">
+      Deine Einkäufe werden automatisch digital gespeichert.
+    </div>
+
+    <div style="margin-top:1rem">
+      <button class="primary">
+        Meine Bons anzeigen
+      </button>
+    </div>
+  </div>
+
+  <!-- PREIS-ALARME -->
+  <div class="card">
+    <h2>Preis-Alarme</h2>
+    <div class="muted">
+      Lass dich informieren, wenn Produkte günstiger werden.
+    </div>
+
+    <div style="margin-top:1rem">
+      <div class="coupon">
+        🛎️ Noch keine Preis-Alarme eingerichtet
+      </div>
+    </div>
+  </div>
+
+  <!-- COUPONS (BLEIBT WIE ES IST) -->
   <div class="card">
     <h2>Deine Coupons</h2>
     <div id="couponList" class="muted">Lade Coupons…</div>
@@ -147,8 +200,6 @@ const supabaseClient = supabase.createClient(
   "sb_publishable_CgwYa1tnn9djtayOCGzPGg_M_92vy4O"
 );
 
-let profileId = null;
-
 (async () => {
   const { data: sessionData } = await supabaseClient.auth.getSession();
 
@@ -159,7 +210,6 @@ let profileId = null;
 
   const user = sessionData.session.user;
 
-  // ✅ PROFIL ÜBER auth_user_id FINDEN
   const { data: profile, error } = await supabaseClient
     .from("profiles")
     .select("*")
@@ -167,33 +217,23 @@ let profileId = null;
     .single();
 
   if (error || !profile) {
-    console.error("Profil nicht gefunden", error);
     alert("Dein korrektPlus Profil wurde noch nicht verknüpft.");
     return;
   }
-
-  profileId = profile.id;
 
   renderProfile(profile);
   loadCoupons();
 })();
 
-
 /* =============================
-   PROFIL RENDER
+   PROFIL
 ============================= */
 function renderProfile(profile) {
-animatePoints(profile.punkte);
+  animatePoints(profile.punkte || 0);
 
-
-  document.getElementById("name").textContent =
-    profile.name || "–";
-
-  document.getElementById("kpId").textContent =
-    profile.korrektplus_id || "–";
-
-  document.getElementById("barcodeId").textContent =
-    profile.barcode_id || "–";
+  document.getElementById("name").textContent = profile.name || "–";
+  document.getElementById("kpId").textContent = profile.korrektplus_id || "–";
+  document.getElementById("barcodeId").textContent = profile.barcode_id || "–";
 }
 
 /* =============================
@@ -219,8 +259,6 @@ async function loadCoupons() {
     div.innerHTML = `
       <strong>${c.title}</strong><br>
       <small>${c.description || ""}</small><br>
-      <small>${c.discountText || ""}</small><br>
-      <small>${c.daysLeft ?? "–"} Tage gültig</small><br>
       <span class="${c.activated ? "active" : "inactive"}">
         ${c.activated ? "✅ Aktiviert" : "⬜ Nicht aktiviert"}
       </span>
@@ -229,33 +267,24 @@ async function loadCoupons() {
   });
 }
 
-  function animatePoints(targetValue, duration = 1200) {
-  const element = document.getElementById("punkte");
-  if (!element) return;
+/* =============================
+   ANIMATION
+============================= */
+function animatePoints(target, duration = 1200) {
+  const el = document.getElementById("punkte");
+  const start = performance.now();
 
-  const startValue = 0;
-  const startTime = performance.now();
+  function step(now) {
+    const progress = Math.min((now - start) / duration, 1);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    el.textContent =
+      Math.floor(target * eased).toLocaleString("de-DE") + " Punkte";
 
-  function update(currentTime) {
-    const elapsed = currentTime - startTime;
-    const progress = Math.min(elapsed / duration, 1);
-
-    // easeOutCubic (fühlt sich hochwertig an)
-    const easedProgress = 1 - Math.pow(1 - progress, 3);
-    const currentValue = Math.floor(
-      startValue + (targetValue - startValue) * easedProgress
-    );
-
-    element.textContent = currentValue.toLocaleString("de-DE") + " Punkte";
-
-    if (progress < 1) {
-      requestAnimationFrame(update);
-    }
+    if (progress < 1) requestAnimationFrame(step);
   }
 
-  requestAnimationFrame(update);
+  requestAnimationFrame(step);
 }
-
 
 /* =============================
    LOGOUT
